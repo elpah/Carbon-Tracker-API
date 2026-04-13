@@ -111,8 +111,8 @@ http://127.0.0.1:8000
 
 ---
 
-## **Example Requests**
-_The `amount` field represents the activity value (distance in km or energy in kWh depending on type)_ 
+## Example Requests
+The `amount` field represents the activity value (distance in km or energy in kWh depending on type)
 
 ### Car  
 ```bash
