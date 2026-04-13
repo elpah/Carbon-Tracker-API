@@ -1,8 +1,6 @@
-from typing import List, Optional
-from pydantic import BaseModel, Field
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
+from pydantic import BaseModel
 from dotenv import load_dotenv
-import requests
 import os
 
 load_dotenv()
@@ -10,26 +8,19 @@ load_dotenv()
 api = FastAPI()
 
 CLIMATIQ_KEY = os.getenv("CLIMATIQ_API_KEY")
+DATA_VERSION = "32.32"
 
+class EstimateRequest(BaseModel):
+    type: str
+    amount: float
+
+TYPE_MAP = {
+    "car": "passenger vehicle car petrol",
+    "flight": "flight passenger",
+    "electricity": "electricity grid"
+}
 
 @api.get("/")
 def index():
-    return {"message": "endpoint reached"}
+    return {"message": "Carbon API running"}
 
-
-@api.post("/estimate")
-def get_estimate(data: dict):
-
-    url = "https://api.climatiq.io/estimate"
-
-    headers = {
-        "Authorization": f"Bearer {CLIMATIQ_KEY}",
-        "Content-Type": "application/json"
-    }
-
-    response = requests.post(url, json=data, headers=headers)
-
-    if response.status_code != 200:
-        raise HTTPException(status_code=400, detail=response.text)
-
-    return response.json()
