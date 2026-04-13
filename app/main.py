@@ -55,10 +55,12 @@ def estimate(payload: EstimateRequest):
         )
 
     search_query = TYPE_MAP[payload.type]
+
     try:
         activity_id = get_activity_id(search_query)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
     url = "https://api.climatiq.io/estimate"
 
     headers = {
@@ -77,13 +79,26 @@ def estimate(payload: EstimateRequest):
                 "energy_unit": "kWh"
             }
         }
-        res = requests.post(url, json=climatiq_body, headers=headers)
-        if res.status_code != 200:
-            raise HTTPException(status_code=400, detail=res.text)
-        data = res.json()
-        return {
-            "type": "electricity",
-            "amount_kwh": payload.amount,
-            "co2e": data["co2e"],
-            "unit": data["co2e_unit"]
+    else:
+        climatiq_body = {
+            "emission_factor": {
+                "activity_id": activity_id,
+                "data_version": DATA_VERSION
+            },
+            "parameters": {
+                "distance": payload.amount,
+                "distance_unit": "km"
+            }
         }
+    res = requests.post(url, json=climatiq_body, headers=headers)
+
+    if res.status_code != 200:
+        raise HTTPException(status_code=400, detail=res.text)
+
+    data = res.json()
+    return {
+        "type": payload.type,
+        "amount": payload.amount,
+        "co2e": data["co2e"],
+        "unit": data["co2e_unit"]
+    }
