@@ -11,11 +11,9 @@ api = FastAPI()
 CLIMATIQ_KEY = os.getenv("CLIMATIQ_API_KEY")
 DATA_VERSION = "32.32"
 
-
 class EstimateRequest(BaseModel):
     type: str
     amount: float
-
 
 TYPE_MAP = {
     "car": "passenger vehicle car petrol",
@@ -43,7 +41,6 @@ def get_activity_id(query: str):
 @api.get("/")
 def index():
     return {"message": "Carbon API running"}
-
 
 @api.post("/estimate")
 def estimate(payload: EstimateRequest):
